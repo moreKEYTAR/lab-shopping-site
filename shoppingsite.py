@@ -61,22 +61,19 @@ def show_shopping_cart():
     # TODO: Display the contents of the shopping cart.
 
     # The logic here will be something like:
-    #
-    # - get the cart dictionary from the session
-    # - create a list to hold melon objects and a variable to hold the total
-    #   cost of the order
-    # - loop over the cart dictionary, and for each melon id:
-    #    - get the corresponding Melon object
-    #    - compute the total cost for that type of melon
-    #    - add this to the order total
-    #    - add quantity and total cost as attributes on the Melon object
-    #    - add the Melon object to the list created above
-    # - pass the total order cost and the list of Melon objects to the template
-    #
-    # Make sure your function can also handle the case wherein no cart has
-    # been added to the session
+    cart_list = []
+    total_cost = 0.00
 
-    return render_template("cart.html")
+    if "cart" in session:
+        cart_dict = session["cart"]
+        for melon_id in cart_dict:
+            melon = melons.get_by_id(melon_id)
+            melon.quantity = cart_dict[melon_id]
+            melon.total = melon.quantity * melon.price
+            cart_list.append(melon)
+            total_cost = total_cost + melon.total
+
+    return render_template("cart.html", cart_list=cart_list, total_cost=total_cost)
 
 
 @app.route("/add_to_cart/<melon_id>")
@@ -92,7 +89,7 @@ def add_to_cart(melon_id):
                               # is a dictionary. In that dictionary, each melon-id
                               # that is added will be a key, its count as a value
 
-    if melon_id not in session["cart"].keys():
+    if melon_id not in session["cart"]:  # don't need .keys() because it will look through all the keys in the value!
         session["cart"][melon_id] = 1  # puts melon_id as a key to count of 1
     else:
         session["cart"][melon_id] += 1  # increments the count for that melon_id
