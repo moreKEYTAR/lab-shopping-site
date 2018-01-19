@@ -87,12 +87,6 @@ def add_to_cart(melon_id):
     page and display a confirmation message: 'Melon successfully added to
     cart'."""
 
-    # TODO: Finish shopping cart functionality
-
-
-    # - flash a success message
-    # - redirect the user to the cart page
-
     if "cart" not in session:
         session["cart"] = {}  # cart is the only session key so far. its value
                               # is a dictionary. In that dictionary, each melon-id
@@ -100,14 +94,15 @@ def add_to_cart(melon_id):
 
     if melon_id not in session["cart"].keys():
         session["cart"][melon_id] = 1  # puts melon_id as a key to count of 1
-    else: 
+    else:
         session["cart"][melon_id] += 1  # increments the count for that melon_id
 
-    flash(("{melon} successfully added to cart!").format(melon=melon_id)) 
-        # can I get the object info, perhaps melon_type?
+    melon = melons.get_by_id(melon_id)
+    flash(("{common_name} successfully added to cart!").format(
+        common_name=melon.common_name))
+
     print session["cart"]
-    
-    return redirect("/cart")
+    return redirect("/cart")  # immediately goes to the view function path "/cart"
 
 
 @app.route("/login", methods=["GET"])  # this route will only accept GET method requests
