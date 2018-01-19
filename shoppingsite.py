@@ -24,6 +24,7 @@ app.secret_key = 'this-should-be-something-unguessable'
 
 app.jinja_env.undefined = jinja2.StrictUndefined
 
+
 @app.route("/")
 def index():
     """Return homepage."""
@@ -88,19 +89,25 @@ def add_to_cart(melon_id):
 
     # TODO: Finish shopping cart functionality
 
-    # The logic here should be something like:
-    #
-    # - check if a "cart" exists in the session, and create one (an empty
-    #   dictionary keyed to the string "cart") if not
-    # - check if the desired melon id is the cart, and if not, put it in
-    # - increment the count for that melon id by 1
+
     # - flash a success message
     # - redirect the user to the cart page
 
-    #  session["cart"] = {melon_id: count}
-    print session['test']
+    if "cart" not in session:
+        session["cart"] = {}  # cart is the only session key so far. its value
+                              # is a dictionary. In that dictionary, each melon-id
+                              # that is added will be a key, its count as a value
 
-    return "Oops! This needs to be implemented!"
+    if melon_id not in session["cart"].keys():
+        session["cart"][melon_id] = 1  # puts melon_id as a key to count of 1
+    else: 
+        session["cart"][melon_id] += 1  # increments the count for that melon_id
+
+    flash(("{melon} successfully added to cart!").format(melon=melon_id)) 
+        # can I get the object info, perhaps melon_type?
+    print session["cart"]
+    
+    return redirect("/cart")
 
 
 @app.route("/login", methods=["GET"])  # this route will only accept GET method requests
